@@ -1,3 +1,7 @@
+# Setup Chunk
+
+# Library Chunk
+
     # Loading and processing the data begins with loading packages and libraries
     library(dplyr)
 
@@ -39,9 +43,12 @@
 
     ## Warning: package 'rmarkdown' was built under R version 4.3.1
 
+# Working Directory Chunk
+
     setwd("C:/Users/Owner/Documents/DataScience/ReproducibleResearch/PeerAssesment")
 
-    # Load data
+# Load and Test Data Chunk
+
     data <- read.csv("C:/Users/Owner/Documents/DataScience/ReproducibleResearch/PeerAssesment/activity.csv")
     # Display the first few rows of the data frame to ensure the data has processed correctly.
     head(data)
@@ -54,6 +61,8 @@
     ## 5    NA 10/1/2012       20
     ## 6    NA 10/1/2012       25
 
+# Summary Data Chunk
+
     summary(data)
 
     ##      steps            date              interval     
@@ -65,21 +74,87 @@
     ##  Max.   :806.00                      Max.   :2355.0  
     ##  NA's   :2304
 
+# Plot the Number of Steps per Interval Chunk
+
     plot(data$steps ~ data$interval)
 
 ![](PA1_template_files/figure-markdown_strict/number_of_steps_per_interval-1.png)
-\# Calculate total steps per day
+\# Calculate Total Steps per Day Chunk
 
     total_steps_per_day <- aggregate(data$steps, by=list(date=data$date), FUN=sum, na.rm=TRUE)
     names(total_steps_per_day) <- c("date", "total_steps")
+    print(total_steps_per_day)
 
-# What are the total number of steps taken each day?
+    ##          date total_steps
+    ## 1   10/1/2012           0
+    ## 2  10/10/2012        9900
+    ## 3  10/11/2012       10304
+    ## 4  10/12/2012       17382
+    ## 5  10/13/2012       12426
+    ## 6  10/14/2012       15098
+    ## 7  10/15/2012       10139
+    ## 8  10/16/2012       15084
+    ## 9  10/17/2012       13452
+    ## 10 10/18/2012       10056
+    ## 11 10/19/2012       11829
+    ## 12  10/2/2012         126
+    ## 13 10/20/2012       10395
+    ## 14 10/21/2012        8821
+    ## 15 10/22/2012       13460
+    ## 16 10/23/2012        8918
+    ## 17 10/24/2012        8355
+    ## 18 10/25/2012        2492
+    ## 19 10/26/2012        6778
+    ## 20 10/27/2012       10119
+    ## 21 10/28/2012       11458
+    ## 22 10/29/2012        5018
+    ## 23  10/3/2012       11352
+    ## 24 10/30/2012        9819
+    ## 25 10/31/2012       15414
+    ## 26  10/4/2012       12116
+    ## 27  10/5/2012       13294
+    ## 28  10/6/2012       15420
+    ## 29  10/7/2012       11015
+    ## 30  10/8/2012           0
+    ## 31  10/9/2012       12811
+    ## 32  11/1/2012           0
+    ## 33 11/10/2012           0
+    ## 34 11/11/2012       12608
+    ## 35 11/12/2012       10765
+    ## 36 11/13/2012        7336
+    ## 37 11/14/2012           0
+    ## 38 11/15/2012          41
+    ## 39 11/16/2012        5441
+    ## 40 11/17/2012       14339
+    ## 41 11/18/2012       15110
+    ## 42 11/19/2012        8841
+    ## 43  11/2/2012       10600
+    ## 44 11/20/2012        4472
+    ## 45 11/21/2012       12787
+    ## 46 11/22/2012       20427
+    ## 47 11/23/2012       21194
+    ## 48 11/24/2012       14478
+    ## 49 11/25/2012       11834
+    ## 50 11/26/2012       11162
+    ## 51 11/27/2012       13646
+    ## 52 11/28/2012       10183
+    ## 53 11/29/2012        7047
+    ## 54  11/3/2012       10571
+    ## 55 11/30/2012           0
+    ## 56  11/4/2012           0
+    ## 57  11/5/2012       10439
+    ## 58  11/6/2012        8334
+    ## 59  11/7/2012       12883
+    ## 60  11/8/2012        3219
+    ## 61  11/9/2012           0
+
+# What are the Total Number of Steps Taken Each Day? Chunk
 
     total_steps_per_day <- data %>% 
       group_by(date) %>% 
       summarise(total_steps = sum(steps, na.rm = TRUE))
 
-# \# Printing the first few rows of the total\_steps\_per\_day dataframe to check if it’s created properly
+# Print the first few rows of the total\_steps\_per\_day dataframe to check if it’s created properly
 
     head(total_steps_per_day)
 
@@ -264,4 +339,14 @@
 
     ## Saving 7 x 5 in image
 
-# Are there differences in activity patterns between weekdays and weekends? Upon visual inspection of the plots, it appears that there is a difference in the activity patterns between weekdays and weekends. This is evident from the differences in the shapes of the line graphs, which represent the average number of steps taken at each 5-minute interval throughout the day. To confirm this, we performed a statistical test (t-test, Wilcoxon, or two-way ANOVA depending on your choice), which indicated a significant difference (p-value &lt; 0.05). Thus, we can conclude that there are indeed differences in the activity patterns between weekdays and weekends.
+# Are there differences in activity patterns between weekdays and weekends?
+
+“Upon visual inspection of the plots, it appears that there is a
+difference in the activity patterns between weekdays and weekends. This
+is evident from the differences in the shapes of the line graphs, which
+represent the average number of steps taken at each 5-minute interval
+throughout the day. To confirm this, I performed a statistical test
+(t-test, Wilcoxon, and two-way ANOVA (while one would suffice all were
+per my choice and fun), which indicated a significant difference
+(p-value &lt; 0.05). Thus, I can conclude that there are indeed
+differences in the activity patterns between weekdays and weekends.”
