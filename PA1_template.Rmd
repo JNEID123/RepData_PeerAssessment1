@@ -1,12 +1,13 @@
 ---
-title: 'PA1_template'
+title: "PA1_template"
 author: "Julia E. Neidhardt"
 date: "2023-06-29"
 output:
-  md_document: default
   html_document: default
+  word_document: default
   variant: markdown_github
   pdf_document: default
+  md_document: default
 ---
 
 # Setup Chunk
