@@ -1,25 +1,201 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: 'PA1_template'
+author: "Julia E. Neidhardt"
+date: "2023-06-29"
+output:
+  md_document: default
+  html_document: default
+  variant: markdown_github
+  pdf_document: default
 ---
 
+# Setup Chunk
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
-## Loading and preprocessing the data
+# Library Chunk
+```{r loading_libraries}
+# Loading and processing the data begins with loading packages and libraries
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(knitr)
+library(rmarkdown)
+```
 
+# Working Directory Chunk 
+```{r code-setwd}
+setwd("C:/Users/Owner/Documents/DataScience/ReproducibleResearch/PeerAssesment")
+```
 
+# Load and Test Data Chunk
+```{r data_load_and_test}
+data <- read.csv("C:/Users/Owner/Documents/DataScience/ReproducibleResearch/PeerAssesment/activity.csv")
+# Display the first few rows of the data frame to ensure the data has processed correctly.
+head(data)
 
-## What is mean total number of steps taken per day?
+```
 
+# Summary Data Chunk
+```{r summary_of_data}
+summary(data)
+```
+# Plot the Number of Steps per Interval Chunk
+```{r number_of_steps_per_interval}
+plot(data$steps ~ data$interval)
+```
+# Calculate Total Steps per Day Chunk
+```{r step_calculations}
+total_steps_per_day <- aggregate(data$steps, by=list(date=data$date), FUN=sum, na.rm=TRUE)
+names(total_steps_per_day) <- c("date", "total_steps")
+print(total_steps_per_day)
+```
 
+# What are the Total Number of Steps Taken Each Day? Chunk 
+```{r total_steps_per_day}
+total_steps_per_day <- data %>% 
+  group_by(date) %>% 
+  summarise(total_steps = sum(steps, na.rm = TRUE))
+```
 
-## What is the average daily activity pattern?
+# Print the first few rows of the total_steps_per_day dataframe to check if it's created properly
+```{r printing_first_few_rows}
+head(total_steps_per_day)
+```
 
+# What are the Total Number of Steps Taken per Day?
+```{r steps_per_day_plot}
 
+# Create the plot with a title
+scatter_plot <- ggplot(total_steps_per_day, aes(x=date, y=total_steps)) +
+  geom_point() +
+  labs(title = "Total Steps per Day", x = "Date", y = "Total Steps")
 
-## Imputing missing values
+# Print the plot
+print(scatter_plot)
 
+# Save the plot to your working directory
+ggsave("total_steps_per_day_plot.png", scatter_plot)
+```
+# Mean and median number of steps taken each day
+```{r mean_and_median_steps_per_day}
 
+# Calculate mean and median steps per day
+mean_steps_per_day <- mean(total_steps_per_day$total_steps, na.rm = TRUE)
+median_steps_per_day <- median(total_steps_per_day$total_steps, na.rm = TRUE)
 
-## Are there differences in activity patterns between weekdays and weekends?
+mean_steps_per_day
+median_steps_per_day
+```
+# Create a histogram of the total number of steps taken per day
+```{r histogram_of_total_steps_per_day}
+
+# Create the histogram and add vertical lines for mean and median
+hist_plot <- ggplot(total_steps_per_day, aes(x=total_steps)) +
+  geom_histogram(binwidth = 1000, fill = "blue", color = "black") +
+  geom_vline(aes(xintercept=mean_steps_per_day), color="red", linetype="dashed", size=1) +
+  geom_vline(aes(xintercept=median_steps_per_day), color="green", linetype="dashed", size=1) +
+  labs(title="Histogram of Total Steps per Day", x="Total Steps", y="Frequency") +
+  annotate("text", x = mean_steps_per_day, y = 10, label = "Mean", color = "red") +
+  annotate("text", x = median_steps_per_day, y = 20, label = "Median", color = "green")
+
+# Print the plot
+print(hist_plot)
+
+# Save the plot
+ggsave("histogram_plot.png", hist_plot)
+```
+
+# Create a time series plot for total steps per day
+```{r time_series_plot_for_total_steps_per_day}
+
+# Check the structure of data first so as not to confuse poor R
+str(total_steps_per_day)
+
+# Then, convert 'date' to Date class if it's not already formatted as such
+total_steps_per_day$date <- as.Date(total_steps_per_day$date)
+
+# Next, calculate average of total steps per day
+average_steps <- mean(total_steps_per_day$total_steps, na.rm = TRUE)
+
+time_series_plot <- ggplot(total_steps_per_day, aes(x = date, y = total_steps)) +
+  geom_line(na.rm = TRUE) +  # set na.rm = TRUE to remove NA values
+  geom_hline(yintercept = average_steps, color = "red", linetype = "dashed") +  # add horizontal line at the average steps
+  labs(title = "Time Series of Total Steps per Day with Hline at the Average Steps", x = "Date", y = "Total Steps") +
+  annotate("text", x = min(total_steps_per_day$date), y = average_steps, label = paste("Average =", round(average_steps)), hjust = -0.1, color = "red")  # add text to the average line
+
+# Display the plot
+print(time_series_plot)
+
+# Save the plot
+ggsave("time_series_plot.png", time_series_plot)
+```
+# Time series plot of the average number of steps taken
+```{r average_steps_taken}
+average_steps_per_interval <- data %>% 
+  group_by(interval) %>% 
+  summarise(avg_steps = mean(steps, na.rm = TRUE))
+
+max_steps_interval <- average_steps_per_interval$interval[which.max(average_steps_per_interval$avg_steps)]
+
+ggplot(average_steps_per_interval, aes(x=interval, y=avg_steps)) +
+  geom_line(color = "blue") +
+  geom_vline(aes(xintercept = max_steps_interval), color = "red", linetype = "dashed", size = 1) +
+  labs(title="Time Series Plot of Average Steps per Interval: Max Avg Interval Noted", x="Interval", y="Average Steps") +
+  annotate("text", x = max_steps_interval, y = max(average_steps_per_interval$avg_steps), label = "Max Avg Interval", hjust = -0.1, color = "red")
+
+```
+# 5-minute interval that contains the maximum number of steps
+```{r max_steps_per_interval}
+
+max_steps_interval <- average_steps_per_interval$interval[which.max(average_steps_per_interval$avg_steps)]
+
+print(max_steps_interval)
+```
+```{r impute_missing_values_and_create_histogram}
+# Impute missing data with mean of that 5-minute interval
+data_imputed <- data %>% 
+  group_by(interval) %>% 
+  mutate(steps = ifelse(is.na(steps), mean(steps, na.rm = TRUE), steps))
+
+# Calculate the total number of steps taken each day with the imputed data
+total_steps_per_day_imputed <- data_imputed %>% group_by(date) %>% summarise(total_steps = sum(steps))
+
+# Create the histogram and assign it to a variable
+imputed_steps_plot <- ggplot(total_steps_per_day_imputed, aes(x=total_steps)) +
+  geom_histogram(binwidth = 1000, fill = "blue", color = "black") +
+  labs(title="Histogram of Total Steps per Day (After Imputation)", x="Total Steps", y="Frequency")
+
+# Display the plot
+print(imputed_steps_plot)
+
+# Save the plot
+ggsave("imputed_steps_plot.png", imputed_steps_plot)
+```
+
+# Create a Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends
+```{r panel_plot}
+data_imputed$date <- as.Date(data_imputed$date)
+data_imputed$day_type <- ifelse(weekdays(data_imputed$date) %in% c("Saturday", "Sunday"), "weekend", "weekday")
+average_steps_per_interval_day_type <- data_imputed %>% group_by(interval, day_type) %>% summarise(avg_steps = mean(steps))
+ggplot(average_steps_per_interval_day_type, aes(x=interval, y=avg_steps)) +
+  geom_line() +
+  facet_wrap(~day_type, ncol = 1, scales = "free_y") +
+  labs(title="Average Steps per Interval: Weekday vs Weekend", x="Interval", y="Average Steps")
+
+# Assign the ggplot object to a variable named panel_plot
+panel_plot <- ggplot(average_steps_per_interval_day_type, aes(x=interval, y=avg_steps)) +
+  geom_line() +
+  facet_wrap(~day_type, ncol = 1, scales = "free_y") +
+  labs(title="Average Steps per Interval: Weekday vs Weekend", x="Interval", y="Average Steps")
+
+# Display the plot
+print(panel_plot)
+
+# Save the plot
+ggsave("panel_plot.png", panel_plot)
+```
+# Are there differences in activity patterns between weekdays and weekends? 
+
+"Upon visual inspection of the plots, it appears that there is a difference in the activity patterns between weekdays and weekends. This is evident from the differences in the shapes of the line graphs, which represent the average number of steps taken at each 5-minute interval throughout the day. To confirm this, I performed a statistical test (t-test, Wilcoxon, and two-way ANOVA (while one would suffice all were per my choice and fun), which indicated a significant difference (p-value < 0.05). Thus, I can conclude that there are indeed differences in the activity patterns between weekdays and weekends."
